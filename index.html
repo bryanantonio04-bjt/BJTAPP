@@ -1,251 +1,728 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>BJT Solution | Control Panel</title>
-
   <style>
+    /* Paleta de colores oficial BJT */
     :root {
-      --fondo:#333; --oliva:#556b2f; --amarillo:#ffd35b;
-      --gris:#efefed; --card:#444;
+      --fondo: #333333;
+      --oliva: #556b2f;
+      --amarillo: #ffd35b;
+      --blanco: #ffffff;
+      --gris: #efefed;
+      --card: #444444;
     }
 
-    body{
-      margin:0; padding:16px;
-      background:var(--fondo); color:var(--gris);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    body {
+      background-color: var(--fondo);
+      color: var(--gris);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 40px;
     }
 
-    header{
-      max-width:1200px; margin:0 auto 20px;
-      display:flex; flex-wrap:wrap; gap:12px;
-      align-items:center; justify-content:space-between;
+    /* Header Estilo Apple */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto 50px;
     }
 
-    nav{
-      display:flex; gap:6px; flex-wrap:wrap;
-      background:rgba(255,255,255,.05);
-      padding:6px; border-radius:14px;
-    }
-    nav button{
-      border:none; background:none; color:#888;
-      padding:10px 16px; border-radius:12px;
-      font-weight:600; cursor:pointer;
-    }
-    nav button.active{ background:rgba(255,255,255,.1); color:var(--amarillo); }
+    .logo-box { display: flex; align-items: center; gap: 20px; }
+    .logo-img { width: 70px; height: 70px; border-radius: 15px; background: #fff; object-fit: contain; padding: 5px; }
 
-    .btn{
-      border:none; border-radius:12px; cursor:pointer;
-      padding:10px 16px; font-weight:600;
+    nav { background: rgba(255,255,255,0.05); padding: 5px; border-radius: 15px; display: flex; }
+    nav button {
+      background: transparent; border: none; color: #888; padding: 10px 25px;
+      cursor: pointer; font-weight: 600; border-radius: 12px; transition: 0.2s;
     }
-    .btn-main{ background:var(--oliva); color:#fff; }
-    .btn-outline{ background:none; border:1px solid #555; color:#aaa; }
+    nav button.active { background: rgba(255,255,255,0.1); color: var(--amarillo); }
 
-    .view{ max-width:1200px; margin:0 auto; display:none; }
+    /* Kanban */
+    .kanban { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; }
+    .column { background: rgba(0,0,0,0.2); min-width: 250px; border-radius: 20px; padding: 15px; }
+    .col-header { font-size: 10px; font-weight: 800; color: var(--amarillo); opacity: 0.6; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* LOGIN */
-    .login{
-      min-height:100vh; display:flex;
-      align-items:center; justify-content:center;
+    .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--oliva); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .card select { background: #222; color: #fff; border: none; width: 100%; margin-top: 10px; padding: 5px; border-radius: 5px; font-size: 10px; }
+
+    .meta {
+      font-size: 10px;
+      opacity: 0.65;
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
     }
-    .login-box{
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:20px; padding:24px;
-      width:min(420px,92vw);
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--gris);
+      font-size: 10px;
+      white-space: nowrap;
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    input,textarea,select{
-      width:100%; box-sizing:border-box;
-      background:#333; border:1px solid #444;
-      color:#fff; padding:12px;
-      border-radius:10px; margin-bottom:12px;
+    .btn-del {
+      background: none;
+      border: 1px solid #555;
+      color: #aaa;
+      padding: 6px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 10px;
+      whitespace: nowrap;
+    }
+    .btn-del:hover { opacity: 0.8; }
+
+    /* Facturas */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto; }
+    .stat-box { background: rgba(255,255,255,0.03); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
+    .amount { font-size: 35px; font-weight: 200; margin: 15px 0; }
+
+    .inv-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #333;
+      opacity: 0.85;
+      font-size: 11px;
+    }
+    .inv-info { flex: 1; min-width: 0; }
+    .inv-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .inv-sub { font-size: 10px; opacity: 0.55; margin-top: 4px; }
+
+    .inv-actions { display:flex; gap:8px; align-items:center; }
+    .inv-actions select {
+      width: auto;
+      padding: 6px 8px;
+      margin: 0;
+      border-radius: 10px;
+      font-size: 10px;
+      background: #222;
+      border: 1px solid #444;
+      color: #fff;
     }
 
-    /* CLIENTES */
-    .grid{
-      display:grid; gap:16px;
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    }
-    .card{
-      background:var(--card); padding:16px;
-      border-radius:16px;
-    }
-    .note{
-      margin-top:8px; font-size:12px;
-      opacity:.85; white-space:pre-wrap;
-      background:rgba(255,255,255,.05);
-      padding:10px; border-radius:10px;
+    /* Botones y Modales */
+    .btn-main { background: var(--oliva); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
+    .btn-main:hover { opacity: 0.8; }
+
+    .toolbar {
+      max-width: 1200px;
+      margin: 0 auto 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
     }
 
-    /* MODAL */
-    .modal{
-      position:fixed; inset:0;
-      display:none; align-items:center; justify-content:center;
-      background:rgba(0,0,0,.8); z-index:100;
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 100; }
+    .modal-content { background: #222; padding: 40px; border-radius: 25px; width: 370px; border: 1px solid #444; }
+    input, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: #333; border: 1px solid #444; color: white; border-radius: 10px; box-sizing: border-box; }
+
+    .hint {
+      font-size: 10px;
+      opacity: 0.5;
+      margin-top: -8px;
+      margin-bottom: 12px;
     }
-    .modal-box{
-      background:#222; padding:24px;
-      border-radius:20px; width:min(420px,92vw);
-      border:1px solid #444;
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--amarillo);
+      font-size: 14px;
+    }
+
+    .sync-badge {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(85, 107, 47, 0.9);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 50;
     }
   </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login" class="login">
-  <div class="login-box">
-    <h2 style="color:var(--amarillo);margin-top:0">BJT Panel</h2>
-    <input id="email" type="email" placeholder="Email">
-    <input id="pass" type="password" placeholder="Contraseña">
-    <button class="btn btn-main" onclick="login()">Entrar</button>
-    <button class="btn btn-outline" onclick="signup()">Crear cuenta</button>
-    <div id="loginMsg" style="font-size:12px;opacity:.6;margin-top:10px"></div>
+  <div class="sync-badge" id="sync-badge">☁️ Sincronizado</div>
+
+  <header>
+    <div class="logo-box">
+      <img src="Logo BJT final.jpg" class="logo-img" alt="BJT" onerror="this.style.display='none'">
+      <div>
+        <h2 style="margin:0">BJT Solution</h2>
+        <div style="font-size:9px; opacity:0.4; letter-spacing:2px">GESTIÓN EMPRESARIAL</div>
+      </div>
+    </div>
+    <nav>
+      <button onclick="changeTab('tareas')" id="btn-tareas" class="active">Tareas</button>
+      <button onclick="changeTab('facturas')" id="btn-facturas">Facturación</button>
+      <button onclick="changeTab('clientes')" id="btn-clientes">Clientes</button>
+    </nav>
+  </header>
+
+  <div id="loading-screen" class="loading">Cargando datos...</div>
+
+  <!-- TAREAS -->
+  <div id="view-tareas" style="display:none">
+    <div class="toolbar">
+      <button class="btn-main" onclick="openModal('tarea')">+ Nueva Tarea</button>
+    </div>
+    <div class="kanban" id="kanban-board"></div>
   </div>
-</div>
 
-<!-- APP -->
-<div id="app" style="display:none">
-
-<header>
-  <strong>BJT Solution</strong>
-  <nav>
-    <button id="t1" class="active" onclick="tab('clientes')">Clientes</button>
-    <button id="t2" onclick="tab('tareas')">Tareas</button>
-    <button id="t3" onclick="tab('facturas')">Facturas</button>
-  </nav>
-  <button class="btn btn-outline" onclick="logout()">Salir</button>
-</header>
-
-<!-- CLIENTES -->
-<div id="clientes" class="view" style="display:block">
-  <button class="btn btn-main" onclick="openClient()">+ Cliente</button>
-  <div class="grid" id="clientList"></div>
-</div>
-
-<!-- TAREAS -->
-<div id="tareas" class="view">
-  <p>🛠 (las tareas quedan igual que tu versión previa, ligadas a clientes)</p>
-</div>
-
-<!-- FACTURAS -->
-<div id="facturas" class="view">
-  <p>💰 (facturas sincronizadas y ligadas a clientes)</p>
-</div>
-
-</div>
-
-<!-- MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <h3 id="mTitle"></h3>
-    <div id="mBody"></div>
-    <button class="btn btn-main" onclick="save()">Guardar</button>
-    <button class="btn btn-outline" onclick="closeModal()">Cerrar</button>
+  <!-- FACTURAS -->
+  <div id="view-facturas" style="display:none">
+    <div class="toolbar" style="justify-content:flex-start; max-width:1200px; margin:0 auto 18px;">
+      <button class="btn-main" onclick="openModal('factura')" style="background:var(--amarillo); color:#000">Nueva Factura</button>
+    </div>
+    <div class="grid-3" id="invoice-board"></div>
   </div>
-</div>
 
-<!-- FIREBASE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword,
-createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+  <!-- CLIENTES -->
+  <div id="view-clientes" style="display:none">
+    <button class="btn-main" onclick="openModal('cliente')">+ Agregar Cliente</button>
+    <button onclick="exportarCSV()" style="background:none; color:#888; border:1px solid #555; padding:10px; border-radius:10px; cursor:pointer; margin-left:10px">Exportar CSV</button>
+    <div id="clients-list" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; margin-top:20px"></div>
+  </div>
 
-/* 🔥 REEMPLAZÁ ESTO CON TU CONFIG 🔥 */
-const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_PROJECT.firebaseapp.com",
-  projectId: "TU_PROJECT",
-};
+  <!-- MODAL -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3 id="modal-title" style="color:var(--amarillo)">AÑADIR</h3>
+      <div id="modal-fields"></div>
+      <div style="display:flex; gap:10px; margin-top:15px">
+        <button onclick="closeModal()" style="background:none; border:none; color:#777; cursor:pointer; flex:1">Cerrar</button>
+        <button onclick="save()" style="background:var(--oliva); color:white; border:none; padding:12px; border-radius:10px; cursor:pointer; font-weight:bold; flex:1">Guardar</button>
+      </div>
+    </div>
+  </div>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+  <script>
+    // =========================
+    // Helpers
+    // =========================
+    const $ = (id) => document.getElementById(id);
 
-let user=null;
-let clients=[];
+    const STORAGE_KEYS = {
+      clients: "bjt_clients",
+      tasks: "bjt_tasks",
+      invoices: "bjt_invoices",
+    };
 
-/* AUTH */
-onAuthStateChanged(auth,u=>{
-  user=u;
-  document.getElementById("login").style.display=u?"none":"flex";
-  document.getElementById("app").style.display=u?"block":"none";
-  if(u) listenClients();
-});
+    const STAGES = ["to-do", "in progress", "work on it", "pending 3 party", "cancelled", "done"];
 
-window.login=async()=>{
-  try{
-    await signInWithEmailAndPassword(auth,email.value,pass.value);
-  }catch(e){ loginMsg.innerText=e.message }
-};
-window.signup=async()=>{
-  try{
-    await createUserWithEmailAndPassword(auth,email.value,pass.value);
-  }catch(e){ loginMsg.innerText=e.message }
-};
-window.logout=()=>signOut(auth);
+    const uid = () =>
+      (crypto?.randomUUID?.() ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2));
 
-/* CLIENTES */
-function listenClients(){
-  onSnapshot(collection(db,"users",user.uid,"clients"),snap=>{
-    clients=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderClients();
-  });
-}
-function renderClients(){
-  clientList.innerHTML="";
-  clients.forEach(c=>{
-    clientList.innerHTML+=`
-      <div class="card">
-        <strong>${c.name}</strong>
-        <div style="font-size:12px;opacity:.6">${c.email||""}</div>
-        <div class="note">${c.notes||"Sin notas"}</div>
-        <button class="btn btn-outline" onclick="editNotes('${c.id}')">Notas</button>
-      </div>`;
-  });
-}
+    // =========================
+    // Cloud Storage Functions
+    // =========================
+    async function loadFromCloud(key) {
+      try {
+        const result = await window.storage.get(key);
+        if (result && result.value) {
+          return JSON.parse(result.value);
+        }
+        return [];
+      } catch (error) {
+        console.log(`No data found for ${key}, starting fresh`);
+        return [];
+      }
+    }
 
-window.openClient=()=>{
-  mTitle.innerText="Nuevo cliente";
-  mBody.innerHTML=`
-    <input id="cName" placeholder="Nombre">
-    <input id="cEmail" placeholder="Email">
-    <textarea id="cNotes" placeholder="Notas"></textarea>`;
-  modal.style.display="flex";
-  modal.dataset.type="newClient";
-};
+    async function saveToCloud(key, data) {
+      try {
+        await window.storage.set(key, JSON.stringify(data));
+        showSyncBadge();
+        return true;
+      } catch (error) {
+        console.error(`Error saving ${key}:`, error);
+        alert('Error al guardar datos. Por favor intenta de nuevo.');
+        return false;
+      }
+    }
 
-window.editNotes=id=>{
-  const c=clients.find(x=>x.id===id);
-  mTitle.innerText="Notas";
-  mBody.innerHTML=`<textarea id="cNotes" rows="6">${c.notes||""}</textarea>`;
-  modal.style.display="flex";
-  modal.dataset.type="editNotes";
-  modal.dataset.id=id;
-};
+    function showSyncBadge() {
+      const badge = $('sync-badge');
+      badge.style.display = 'flex';
+      setTimeout(() => {
+        badge.style.display = 'none';
+      }, 2000);
+    }
 
-window.save=async()=>{
-  if(modal.dataset.type==="newClient"){
-    await addDoc(collection(db,"users",user.uid,"clients"),{
-      name:cName.value,email:cEmail.value,notes:cNotes.value
+    async function loadDB() {
+      const [clients, tasks, invoices] = await Promise.all([
+        loadFromCloud(STORAGE_KEYS.clients),
+        loadFromCloud(STORAGE_KEYS.tasks),
+        loadFromCloud(STORAGE_KEYS.invoices)
+      ]);
+      
+      return { clients, tasks, invoices };
+    }
+
+    async function saveDB() {
+      await Promise.all([
+        saveToCloud(STORAGE_KEYS.clients, db.clients),
+        saveToCloud(STORAGE_KEYS.tasks, db.tasks),
+        saveToCloud(STORAGE_KEYS.invoices, db.invoices)
+      ]);
+    }
+
+    function clientNameById(id) {
+      if (!id) return "";
+      const c = db.clients.find(x => String(x.id) === String(id));
+      return c ? c.n : "";
+    }
+
+    function buildClientSelect(selectId, selectedClientId = "") {
+      const select = document.createElement("select");
+      select.id = selectId;
+
+      const optNone = document.createElement("option");
+      optNone.value = "";
+      optNone.textContent = "Sin cliente (opcional)";
+      select.appendChild(optNone);
+
+      db.clients.forEach(c => {
+        const o = document.createElement("option");
+        o.value = c.id;
+        o.textContent = c.n;
+        if (String(selectedClientId) === String(c.id)) o.selected = true;
+        select.appendChild(o);
+      });
+
+      return select;
+    }
+
+    // Escape CSV fields properly
+    function csvField(v) {
+      const s = String(v ?? "");
+      if (/[",\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
+      return s;
+    }
+
+    // =========================
+    // State
+    // =========================
+    let db = { clients: [], tasks: [], invoices: [] };
+    let activeType = "";
+    let modalContext = { stage: "to-do" };
+
+    // =========================
+    // Tabs
+    // =========================
+    window.changeTab = function changeTab(t) {
+      ["tareas", "facturas", "clientes"].forEach((v) => {
+        $("view-" + v).style.display = v === t ? "block" : "none";
+        $("btn-" + v).className = v === t ? "active" : "";
+      });
+      render();
+    };
+
+    // =========================
+    // Modal
+    // =========================
+    window.openModal = function openModal(type, ctx = {}) {
+      activeType = type;
+      modalContext = { stage: "to-do", ...ctx };
+
+      $("modal-title").innerText = "NUEVO " + type.toUpperCase();
+      const f = $("modal-fields");
+      f.innerHTML = "";
+
+      if (type === "cliente") {
+        f.innerHTML = `
+          <input id="i1" placeholder="Nombre" autocomplete="name">
+          <input id="i2" placeholder="Email" autocomplete="email">
+        `;
+      }
+
+      if (type === "tarea") {
+        const ta = document.createElement("textarea");
+        ta.id = "i1";
+        ta.placeholder = "Descripción de la tarea";
+        ta.rows = 3;
+
+        const hint = document.createElement("div");
+        hint.className = "hint";
+        hint.textContent = "Podés ligarla a un cliente (opcional)";
+
+        const sel = buildClientSelect("i2", "");
+
+        f.appendChild(ta);
+        f.appendChild(hint);
+        f.appendChild(sel);
+      }
+
+      if (type === "factura") {
+        const ref = document.createElement("input");
+        ref.id = "i1";
+        ref.placeholder = "Nº de Referencia";
+
+        const monto = document.createElement("input");
+        monto.id = "i2";
+        monto.type = "number";
+        monto.placeholder = "Monto $";
+        monto.min = "0";
+        monto.step = "0.01";
+
+        const hint = document.createElement("div");
+        hint.className = "hint";
+        hint.textContent = "Cliente opcional (podés dejarlo en blanco)";
+
+        const clientSel = buildClientSelect("i4", "");
+
+        const estado = document.createElement("select");
+        estado.id = "i3";
+        estado.innerHTML = `
+          <option value="p">Por Cobrar</option>
+          <option value="pag">Pagada</option>
+          <option value="can">Cancelada</option>
+        `;
+
+        f.appendChild(ref);
+        f.appendChild(monto);
+        f.appendChild(hint);
+        f.appendChild(clientSel);
+        f.appendChild(estado);
+      }
+
+      $("modal").style.display = "flex";
+      setTimeout(() => $("i1")?.focus(), 0);
+    };
+
+    window.closeModal = function closeModal() {
+      $("modal").style.display = "none";
+    };
+
+    $("modal").addEventListener("click", (e) => {
+      if (e.target.id === "modal") closeModal();
     });
-  }
-  modal.style.display="none";
-};
-window.closeModal=()=>modal.style.display="none";
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
 
-/* UI */
-window.tab=t=>{
-  ["clientes","tareas","facturas"].forEach(v=>{
-    document.getElementById(v).style.display=v===t?"block":"none";
-  });
-  ["t1","t2","t3"].forEach((id,i)=>{
-    document.getElementById(id).classList.toggle("active",[ "clientes","tareas","facturas" ][i]===t);
-  });
-};
-</script>
+    window.save = async function save() {
+      const v1 = $("i1")?.value?.trim();
+      const v2 = $("i2")?.value?.trim();
+      const v3 = $("i3")?.value;
+      const v4 = $("i4")?.value;
 
+      if (!v1) return alert("El campo principal es obligatorio");
+
+      if (activeType === "cliente") {
+        db.clients.push({ id: uid(), n: v1, e: v2 || "" });
+      }
+
+      if (activeType === "tarea") {
+        const clientId = $("i2")?.value || "";
+        db.tasks.push({
+          id: uid(),
+          t: v1,
+          s: modalContext.stage || "to-do",
+          cId: clientId || ""
+        });
+      }
+
+      if (activeType === "factura") {
+        const monto = Number($("i2")?.value || 0);
+        const clientId = $("i4")?.value || "";
+        db.invoices.push({
+          id: uid(),
+          r: v1,
+          m: isFinite(monto) ? monto : 0,
+          s: v3 || "p",
+          cId: clientId || ""
+        });
+      }
+
+      closeModal();
+      await saveDB();
+      render();
+    };
+
+    // =========================
+    // Render
+    // =========================
+    function render() {
+      renderKanban();
+      renderInvoices();
+      renderClients();
+    }
+
+    function renderKanban() {
+      const board = $("kanban-board");
+      board.innerHTML = "";
+
+      STAGES.forEach((stage) => {
+        const col = document.createElement("div");
+        col.className = "column";
+
+        const header = document.createElement("div");
+        header.className = "col-header";
+        header.textContent = stage;
+
+        const list = document.createElement("div");
+
+        db.tasks
+          .filter((t) => t.s === stage)
+          .forEach((t) => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            const p = document.createElement("p");
+            p.textContent = t.t;
+            card.appendChild(p);
+
+            const meta = document.createElement("div");
+            meta.className = "meta";
+
+            const cname = clientNameById(t.cId);
+            const badge = document.createElement("div");
+            badge.className = "badge";
+            badge.textContent = "Cliente: " + (cname || "Sin cliente");
+            meta.appendChild(badge);
+
+            const del = document.createElement("button");
+            del.className = "btn-del";
+            del.textContent = "Borrar";
+            del.addEventListener("click", () => {
+              const ok = confirm("¿Borrar esta tarea?");
+              if (!ok) return;
+              deleteTask(t.id);
+            });
+            meta.appendChild(del);
+
+            card.appendChild(meta);
+
+            const sel = document.createElement("select");
+            STAGES.forEach((opt) => {
+              const o = document.createElement("option");
+              o.value = opt;
+              o.textContent = opt;
+              if (opt === stage) o.selected = true;
+              sel.appendChild(o);
+            });
+            sel.addEventListener("change", (e) => moveTask(t.id, e.target.value));
+            card.appendChild(sel);
+
+            list.appendChild(card);
+          });
+
+        col.appendChild(header);
+        col.appendChild(list);
+        board.appendChild(col);
+      });
+    }
+
+    function renderInvoices() {
+      const fin = $("invoice-board");
+      if (!fin) return;
+
+      const total = (st) =>
+        db.invoices
+          .filter((i) => i.s === st)
+          .reduce((acc, v) => acc + Number(v.m || 0), 0);
+
+      fin.innerHTML = "";
+
+      const groups = [
+        { l: "Por Cobrar", s: "p", c: "var(--amarillo)" },
+        { l: "Pagadas", s: "pag", c: "var(--oliva)" },
+        { l: "Canceladas", s: "can", c: "#ff4444" },
+      ];
+
+      groups.forEach((g) => {
+        const box = document.createElement("div");
+        box.className = "stat-box";
+
+        const title = document.createElement("div");
+        title.style.fontSize = "10px";
+        title.style.opacity = "0.4";
+        title.style.fontWeight = "bold";
+        title.textContent = g.l.toUpperCase();
+
+        const amt = document.createElement("div");
+        amt.className = "amount";
+        amt.style.color = g.c;
+        amt.textContent =
+          "$" + total(g.s).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+        box.appendChild(title);
+        box.appendChild(amt);
+
+        const list = db.invoices.filter((i) => i.s === g.s);
+
+        if (list.length === 0) {
+          const empty = document.createElement("div");
+          empty.style.fontSize = "11px";
+          empty.style.opacity = "0.4";
+          empty.style.paddingTop = "6px";
+          empty.textContent = "Sin facturas en esta categoría.";
+          box.appendChild(empty);
+        } else {
+          list.forEach((inv) => {
+            const row = document.createElement("div");
+            row.className = "inv-row";
+
+            const info = document.createElement("div");
+            info.className = "inv-info";
+
+            const line1 = document.createElement("div");
+            line1.className = "inv-title";
+            line1.textContent = `#${inv.r} — $${Number(inv.m || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+
+            const cname = clientNameById(inv.cId);
+            const line2 = document.createElement("div");
+            line2.className = "inv-sub";
+            line2.textContent = cname ? `Cliente: ${cname}` : "Cliente: (sin asignar)";
+
+            info.appendChild(line1);
+            info.appendChild(line2);
+
+            const actions = document.createElement("div");
+            actions.className = "inv-actions";
+
+            const stSel = document.createElement("select");
+            [
+              {v:"p", l:"Por cobrar"},
+              {v:"pag", l:"Pagada"},
+              {v:"can", l:"Cancelada"},
+            ].forEach(opt => {
+              const o = document.createElement("option");
+              o.value = opt.v;
+              o.textContent = opt.l;
+              if (opt.v === inv.s) o.selected = true;
+              stSel.appendChild(o);
+            });
+            stSel.addEventListener("change", (e) => moveInvoice(inv.id, e.target.value));
+
+            const del = document.createElement("button");
+            del.className = "btn-del";
+            del.textContent = "Borrar";
+            del.addEventListener("click", () => {
+              const ok = confirm("¿Borrar esta factura?");
+              if (!ok) return;
+              deleteInvoice(inv.id);
+            });
+
+            actions.appendChild(stSel);
+            actions.appendChild(del);
+
+            row.appendChild(info);
+            row.appendChild(actions);
+
+            box.appendChild(row);
+          });
+        }
+
+        fin.appendChild(box);
+      });
+    }
+
+    function renderClients() {
+      const cl = $("clients-list");
+      if (!cl) return;
+
+      cl.innerHTML = "";
+      db.clients.forEach((c) => {
+        const box = document.createElement("div");
+        box.className = "stat-box";
+        box.style.padding = "20px";
+
+        const name = document.createElement("div");
+        name.style.fontWeight = "bold";
+        name.style.color = "var(--amarillo)";
+        name.style.marginBottom = "5px";
+        name.textContent = c.n;
+
+        const email = document.createElement("div");
+        email.style.fontSize = "11px";
+        email.style.opacity = "0.4";
+        email.textContent = c.e || "";
+
+        box.appendChild(name);
+        box.appendChild(email);
+        cl.appendChild(box);
+      });
+    }
+
+    // =========================
+    // Actions
+    // =========================
+    window.moveTask = async function moveTask(id, ns) {
+      db.tasks = db.tasks.map((t) => (t.id === id ? { ...t, s: ns } : t));
+      await saveDB();
+      render();
+    };
+
+    window.deleteTask = async function deleteTask(id) {
+      db.tasks = db.tasks.filter(t => t.id !== id);
+      await saveDB();
+      render();
+    };
+
+    window.moveInvoice = async function moveInvoice(id, ns) {
+      db.invoices = db.invoices.map((i) => (i.id === id ? { ...i, s: ns } : i));
+      await saveDB();
+      render();
+    };
+
+    window.deleteInvoice = async function deleteInvoice(id) {
+      db.invoices = db.invoices.filter(i => i.id !== id);
+      await saveDB();
+      render();
+    };
+
+    window.exportarCSV = function exportarCSV() {
+      const header = ["Nombre", "Email"].map(csvField).join(",");
+      const rows = db.clients.map((c) => [csvField(c.n), csvField(c.e)].join(","));
+      const csv = "\uFEFF" + header + "\n" + rows.join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "clientes_bjt.csv";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+
+    // =========================
+    // Init
+    // =========================
+    async function init() {
+      try {
+        db = await loadDB();
+        $('loading-screen').style.display = 'none';
+        $('view-tareas').style.display = 'block';
+        render();
+      } catch (error) {
+        console.error('Error loading data:', error);
+        $('loading-screen').innerHTML = 'Error al cargar datos. Por favor recarga la página.';
+      }
+    }
+
+    init();
+  </script>
 </body>
 </html>
