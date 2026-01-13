@@ -245,12 +245,19 @@
     }
 
     // =========================
-    // Google Sheets DB (Apps Script)
+    // Google Sheets DB (Apps Script) - ROBUST
     // =========================
     async function apiGet(url) {
-      const res = await fetch(url, { method: "GET" });
-      if (!res.ok) throw new Error("GET failed: " + res.status);
-      return await res.json();
+      const res = await fetch(url, { method: "GET", cache: "no-store" });
+      const text = await res.text();
+
+      try {
+        const json = JSON.parse(text);
+        if (!res.ok) throw new Error("HTTP " + res.status + ": " + JSON.stringify(json));
+        return json;
+      } catch (e) {
+        throw new Error("Respuesta NO JSON (GET). Primeros 300 chars:\n" + text.slice(0, 300));
+      }
     }
 
     async function apiPost(url, payload) {
@@ -258,9 +265,18 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        cache: "no-store"
       });
-      if (!res.ok) throw new Error("POST failed: " + res.status);
-      return await res.json();
+
+      const text = await res.text();
+
+      try {
+        const json = JSON.parse(text);
+        if (!res.ok) throw new Error("HTTP " + res.status + ": " + JSON.stringify(json));
+        return json;
+      } catch (e) {
+        throw new Error("Respuesta NO JSON (POST). Primeros 300 chars:\n" + text.slice(0, 300));
+      }
     }
 
     async function loadDB() {
@@ -268,7 +284,6 @@
       if (!out.ok) throw new Error(out.error || "Error cargando DB");
 
       const data = out.data || { clients: [], tasks: [], invoices: [] };
-
       data.invoices = (data.invoices || []).map(i => ({ ...i, m: Number(i.m || 0) }));
 
       return {
@@ -279,13 +294,16 @@
     }
 
     async function saveDB() {
-      const out = await apiPost(SHEETS_API_URL, { action: "save", data: db });
-      if (!out.ok) {
-        alert("Error al guardar: " + (out.error || "desconocido"));
+      try {
+        const out = await apiPost(SHEETS_API_URL, { action: "save", data: db });
+        if (!out.ok) throw new Error(out.error || "Save no ok");
+        showSyncBadge();
+        return true;
+      } catch (e) {
+        console.error("SAVE ERROR:", e);
+        alert("No se pudo guardar:\n" + (e?.message || e));
         return false;
       }
-      showSyncBadge();
-      return true;
     }
 
     function clientNameById(id) {
@@ -368,7 +386,6 @@
         hint.textContent = "Podés ligarla a un cliente (opcional)";
 
         const sel = buildClientSelect("i2", "");
-
         f.appendChild(ta);
         f.appendChild(hint);
         f.appendChild(sel);
@@ -461,7 +478,17 @@
       }
 
       closeModal();
-      await saveDB();
+
+      const ok = await saveDB();
+      if (!ok) return; // si falla, no renderices "como si" ya quedó persistido
+
+      // Recarga desde Sheets para confirmar que lo que ves es lo que está guardado
+      try {
+        db = await loadDB();
+      } catch (e) {
+        console.warn("No se pudo recargar DB tras guardar:", e);
+      }
+
       render();
     };
 
@@ -676,25 +703,33 @@
     // =========================
     window.moveTask = async function moveTask(id, ns) {
       db.tasks = db.tasks.map((t) => (t.id === id ? { ...t, s: ns } : t));
-      await saveDB();
+      const ok = await saveDB();
+      if (!ok) return;
+      try { db = await loadDB(); } catch {}
       render();
     };
 
     window.deleteTask = async function deleteTask(id) {
       db.tasks = db.tasks.filter(t => t.id !== id);
-      await saveDB();
+      const ok = await saveDB();
+      if (!ok) return;
+      try { db = await loadDB(); } catch {}
       render();
     };
 
     window.moveInvoice = async function moveInvoice(id, ns) {
       db.invoices = db.invoices.map((i) => (i.id === id ? { ...i, s: ns } : i));
-      await saveDB();
+      const ok = await saveDB();
+      if (!ok) return;
+      try { db = await loadDB(); } catch {}
       render();
     };
 
     window.deleteInvoice = async function deleteInvoice(id) {
       db.invoices = db.invoices.filter(i => i.id !== id);
-      await saveDB();
+      const ok = await saveDB();
+      if (!ok) return;
+      try { db = await loadDB(); } catch {}
       render();
     };
 
@@ -722,7 +757,8 @@
         render();
       } catch (error) {
         console.error('Error loading data:', error);
-        $('loading-screen').innerHTML = 'Error al cargar datos. Por favor recarga la página.';
+        $('loading-screen').style.whiteSpace = 'pre-wrap';
+        $('loading-screen').innerText = 'Error al cargar datos:\n' + (error?.message || error);
       }
     }
 
