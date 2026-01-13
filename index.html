@@ -218,16 +218,15 @@
   </div>
 
   <script>
+    // =========================================
+    // CONFIG: Google Apps Script Web App URL
+    // =========================================
+    const SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxylg1tPkCfmE8sYzuIlBwtk9qGX3QOTr6FKXel99tgpGRvgzjwJ67_llhsCS4A27XI/exec";
+
     // =========================
     // Helpers
     // =========================
     const $ = (id) => document.getElementById(id);
-
-    const STORAGE_KEYS = {
-      clients: "bjt_clients",
-      tasks: "bjt_tasks",
-      invoices: "bjt_invoices",
-    };
 
     const STAGES = ["to-do", "in progress", "work on it", "pending 3 party", "cancelled", "done"];
 
@@ -235,33 +234,8 @@
       (crypto?.randomUUID?.() ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2));
 
     // =========================
-    // Cloud Storage Functions
+    // Sync Badge
     // =========================
-    async function loadFromCloud(key) {
-      try {
-        const result = await window.storage.get(key);
-        if (result && result.value) {
-          return JSON.parse(result.value);
-        }
-        return [];
-      } catch (error) {
-        console.log(`No data found for ${key}, starting fresh`);
-        return [];
-      }
-    }
-
-    async function saveToCloud(key, data) {
-      try {
-        await window.storage.set(key, JSON.stringify(data));
-        showSyncBadge();
-        return true;
-      } catch (error) {
-        console.error(`Error saving ${key}:`, error);
-        alert('Error al guardar datos. Por favor intenta de nuevo.');
-        return false;
-      }
-    }
-
     function showSyncBadge() {
       const badge = $('sync-badge');
       badge.style.display = 'flex';
@@ -270,22 +244,48 @@
       }, 2000);
     }
 
+    // =========================
+    // Google Sheets DB (Apps Script)
+    // =========================
+    async function apiGet(url) {
+      const res = await fetch(url, { method: "GET" });
+      if (!res.ok) throw new Error("GET failed: " + res.status);
+      return await res.json();
+    }
+
+    async function apiPost(url, payload) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("POST failed: " + res.status);
+      return await res.json();
+    }
+
     async function loadDB() {
-      const [clients, tasks, invoices] = await Promise.all([
-        loadFromCloud(STORAGE_KEYS.clients),
-        loadFromCloud(STORAGE_KEYS.tasks),
-        loadFromCloud(STORAGE_KEYS.invoices)
-      ]);
-      
-      return { clients, tasks, invoices };
+      const out = await apiGet(`${SHEETS_API_URL}?action=load`);
+      if (!out.ok) throw new Error(out.error || "Error cargando DB");
+
+      const data = out.data || { clients: [], tasks: [], invoices: [] };
+
+      data.invoices = (data.invoices || []).map(i => ({ ...i, m: Number(i.m || 0) }));
+
+      return {
+        clients: Array.isArray(data.clients) ? data.clients : [],
+        tasks: Array.isArray(data.tasks) ? data.tasks : [],
+        invoices: Array.isArray(data.invoices) ? data.invoices : [],
+      };
     }
 
     async function saveDB() {
-      await Promise.all([
-        saveToCloud(STORAGE_KEYS.clients, db.clients),
-        saveToCloud(STORAGE_KEYS.tasks, db.tasks),
-        saveToCloud(STORAGE_KEYS.invoices, db.invoices)
-      ]);
+      const out = await apiPost(SHEETS_API_URL, { action: "save", data: db });
+      if (!out.ok) {
+        alert("Error al guardar: " + (out.error || "desconocido"));
+        return false;
+      }
+      showSyncBadge();
+      return true;
     }
 
     function clientNameById(id) {
@@ -430,8 +430,10 @@
 
       if (!v1) return alert("El campo principal es obligatorio");
 
+      const now = new Date().toISOString();
+
       if (activeType === "cliente") {
-        db.clients.push({ id: uid(), n: v1, e: v2 || "" });
+        db.clients.push({ id: uid(), n: v1, e: v2 || "", createdAt: now });
       }
 
       if (activeType === "tarea") {
@@ -440,7 +442,8 @@
           id: uid(),
           t: v1,
           s: modalContext.stage || "to-do",
-          cId: clientId || ""
+          cId: clientId || "",
+          createdAt: now
         });
       }
 
@@ -452,7 +455,8 @@
           r: v1,
           m: isFinite(monto) ? monto : 0,
           s: v3 || "p",
-          cId: clientId || ""
+          cId: clientId || "",
+          createdAt: now
         });
       }
 
@@ -714,7 +718,7 @@
       try {
         db = await loadDB();
         $('loading-screen').style.display = 'none';
-        $('view-tareas').style.display = 'block';
+        changeTab('tareas');
         render();
       } catch (error) {
         console.error('Error loading data:', error);
@@ -726,3 +730,4 @@
   </script>
 </body>
 </html>
+
