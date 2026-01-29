@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BJT Solution | Control Panel</title>
+
   <style>
-    /* Paleta de colores oficial BJT */
     :root {
       --fondo: #333333;
       --oliva: #556b2f;
@@ -12,7 +13,12 @@
       --blanco: #ffffff;
       --gris: #efefed;
       --card: #444444;
+      --muted: rgba(255,255,255,0.06);
+      --muted2: rgba(255,255,255,0.10);
+      --border: rgba(255,255,255,0.10);
     }
+
+    * { box-sizing: border-box; }
 
     body {
       background-color: var(--fondo);
@@ -22,36 +28,182 @@
       padding: 40px;
     }
 
-    /* Header Estilo Apple */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       max-width: 1200px;
-      margin: 0 auto 50px;
+      margin: 0 auto 22px;
+      gap: 16px;
     }
 
-    .logo-box { display: flex; align-items: center; gap: 20px; }
-    .logo-img { width: 70px; height: 70px; border-radius: 15px; background: #fff; object-fit: contain; padding: 5px; }
+    .logo-box { display: flex; align-items: center; gap: 16px; min-width: 0; }
+    .logo-img {
+      width: 64px; height: 64px;
+      border-radius: 14px;
+      background: #fff;
+      object-fit: contain;
+      padding: 6px;
+      flex: 0 0 auto;
+    }
+    .title-wrap { min-width: 0; }
+    .app-title { font-size: 18px; font-weight: 700; margin: 0; }
+    .app-sub { font-size: 12px; opacity: 0.7; margin-top: 4px; }
 
-    nav { background: rgba(255,255,255,0.05); padding: 5px; border-radius: 15px; display: flex; }
+    nav {
+      background: rgba(255,255,255,0.05);
+      padding: 6px;
+      border-radius: 16px;
+      display: flex;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
     nav button {
-      background: transparent; border: none; color: #888; padding: 10px 25px;
-      cursor: pointer; font-weight: 600; border-radius: 12px; transition: 0.2s;
+      background: transparent;
+      border: none;
+      color: #aaa;
+      padding: 10px 18px;
+      cursor: pointer;
+      font-weight: 700;
+      border-radius: 12px;
+      transition: 0.2s;
+      white-space: nowrap;
+      font-size: 12px;
     }
-    nav button.active { background: rgba(255,255,255,0.1); color: var(--amarillo); }
+    nav button.active { background: rgba(255,255,255,0.10); color: var(--amarillo); }
+
+    .topbar {
+      max-width: 1200px;
+      margin: 0 auto 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-main {
+      background: var(--oliva);
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 12px;
+    }
+    .btn-main:hover { opacity: 0.9; }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.18);
+      color: var(--gris);
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .btn-ghost:hover { opacity: 0.9; }
+
+    .sync-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--muted);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 11px;
+      white-space: nowrap;
+      max-width: 360px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.95;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.55);
+      flex: 0 0 auto;
+    }
+    .dot.ok { background: rgba(255,255,255,0.55); }
+    .dot.pending { background: var(--amarillo); }
+    .dot.err { background: #ff6b6b; }
+
+    /* Views */
+    .view { display: none; }
+    .view.active { display: block; }
 
     /* Kanban */
-    .kanban { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; }
-    .column { background: rgba(0,0,0,0.2); min-width: 250px; border-radius: 20px; padding: 15px; }
-    .col-header { font-size: 10px; font-weight: 800; color: var(--amarillo); opacity: 0.6; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+    .kanban {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding-bottom: 18px;
+      -webkit-overflow-scrolling: touch;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .column {
+      background: rgba(0,0,0,0.20);
+      min-width: 280px;
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .col-header {
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--amarillo);
+      opacity: 0.7;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .count {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 4px 10px;
+      border-radius: 999px;
+      color: var(--gris);
+      font-size: 10px;
+      opacity: 0.9;
+    }
 
-    .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--oliva); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .card select { background: #222; color: #fff; border: none; width: 100%; margin-top: 10px; padding: 5px; border-radius: 5px; font-size: 10px; }
+    .card {
+      background: var(--card);
+      padding: 14px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      border-left: 4px solid var(--oliva);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.10);
+    }
+    .card-title {
+      font-weight: 800;
+      font-size: 12px;
+      margin: 0 0 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .card-desc {
+      font-size: 11px;
+      opacity: 0.8;
+      margin: 0 0 10px;
+      line-height: 1.35;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
 
     .meta {
       font-size: 10px;
-      opacity: 0.65;
+      opacity: 0.70;
       margin-top: 8px;
       display: flex;
       justify-content: space-between;
@@ -69,196 +221,475 @@
       color: var(--gris);
       font-size: 10px;
       white-space: nowrap;
-      max-width: 160px;
+      max-width: 180px;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .btn-del {
       background: none;
-      border: 1px solid #555;
-      color: #aaa;
-      padding: 6px 8px;
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #ddd;
+      padding: 6px 10px;
       border-radius: 10px;
       cursor: pointer;
       font-size: 10px;
-      whitespace: nowrap;
+      white-space: nowrap; /* FIX */
     }
-    .btn-del:hover { opacity: 0.8; }
+    .btn-del:hover { opacity: 0.85; }
 
-    /* Facturas */
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto; }
-    .stat-box { background: rgba(255,255,255,0.03); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
-    .amount { font-size: 35px; font-weight: 200; margin: 15px 0; }
+    .card select {
+      background: #222;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.14);
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+    }
+
+    /* Panels */
+    .panel {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--gris);
+      opacity: 0.95;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .stat-box {
+      background: rgba(255,255,255,0.03);
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .amount { font-size: 30px; font-weight: 200; margin: 12px 0; }
+
+    label { font-size: 11px; opacity: 0.85; display: block; margin: 0 0 6px; }
+    input, textarea, select {
+      width: 100%;
+      background: rgba(0,0,0,0.25);
+      color: var(--gris);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+      font-size: 12px;
+    }
+    textarea { min-height: 90px; resize: vertical; }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .list {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .note-item, .expense-item, .inv-row {
+      background: rgba(0,0,0,0.20);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .note-meta, .expense-meta, .inv-sub {
+      font-size: 10px;
+      opacity: 0.65;
+      margin-top: 6px;
+    }
 
     .inv-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid #333;
-      opacity: 0.85;
+      opacity: 0.95;
       font-size: 11px;
     }
     .inv-info { flex: 1; min-width: 0; }
-    .inv-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .inv-sub { font-size: 10px; opacity: 0.55; margin-top: 4px; }
+    .inv-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 900; }
+    .inv-actions { display:flex; gap:8px; align-items:center; flex: 0 0 auto; }
+    .inv-actions select { width: auto; }
 
-    .inv-actions { display:flex; gap:8px; align-items:center; }
-    .inv-actions select {
-      width: auto;
-      padding: 6px 8px;
-      margin: 0;
-      border-radius: 10px;
-      font-size: 10px;
-      background: #222;
-      border: 1px solid #444;
-      color: #fff;
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      padding: 18px;
+      z-index: 50;
+    }
+    .modal.open { display: flex; align-items: center; justify-content: center; }
+    .modal-card {
+      width: min(640px, 100%);
+      background: #2f2f2f;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .modal-title { font-size: 14px; font-weight: 900; margin: 0; }
+    .modal-close {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.16);
+      color: var(--gris);
+      border-radius: 12px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 800;
     }
 
-    /* Botones y Modales */
-    .btn-main { background: var(--oliva); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
-    .btn-main:hover { opacity: 0.8; }
-
-    .toolbar {
-      max-width: 1200px;
-      margin: 0 auto 18px;
+    .footer-actions {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
     }
 
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 100; }
-    .modal-content { background: #222; padding: 40px; border-radius: 25px; width: 370px; border: 1px solid #444; }
-    input, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: #333; border: 1px solid #444; color: white; border-radius: 10px; box-sizing: border-box; }
-
-    .hint {
-      font-size: 10px;
-      opacity: 0.5;
-      margin-top: -8px;
-      margin-bottom: 12px;
+    /* Responsive */
+    @media (max-width: 900px) {
+      body { padding: 18px; }
+      header { flex-direction: column; align-items: stretch; }
+      nav { width: 100%; justify-content: space-between; }
+      nav button { flex: 1 1 auto; text-align: center; padding: 10px 10px; }
+      .topbar { flex-direction: column; align-items: stretch; }
+      .grid { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .column { min-width: 86vw; }
     }
 
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: var(--amarillo);
-      font-size: 14px;
-    }
-
-    .sync-badge {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: rgba(85, 107, 47, 0.9);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 11px;
-      display: none;
-      align-items: center;
-      gap: 8px;
-      z-index: 50;
+    @media (max-width: 500px) {
+      .logo-img { width: 54px; height: 54px; }
+      .app-title { font-size: 16px; }
+      .sync-pill { max-width: 100%; }
     }
   </style>
 </head>
+
 <body>
-
-  <div class="sync-badge" id="sync-badge">☁️ Sincronizado</div>
-
   <header>
     <div class="logo-box">
-      <img src="Logo BJT final.jpg" class="logo-img" alt="BJT" onerror="this.style.display='none'">
-      <div>
-        <h2 style="margin:0">BJT Solution</h2>
-        <div style="font-size:9px; opacity:0.4; letter-spacing:2px">GESTIÓN EMPRESARIAL</div>
+      <!-- Ajustá la ruta a tu public en Vercel -->
+      <img class="logo-img" src="/logo-bjt.jpg" alt="BJT" />
+      <div class="title-wrap">
+        <p class="app-title">BJT Solution | Control Panel</p>
+        <div class="app-sub">Tareas, facturas, bitácora por cliente y gastos</div>
       </div>
     </div>
+
     <nav>
-      <button onclick="changeTab('tareas')" id="btn-tareas" class="active">Tareas</button>
-      <button onclick="changeTab('facturas')" id="btn-facturas">Facturación</button>
-      <button onclick="changeTab('clientes')" id="btn-clientes">Clientes</button>
+      <button id="tabTasks" class="active" onclick="setView('tasks')">Tareas</button>
+      <button id="tabInvoices" onclick="setView('invoices')">Facturas</button>
+      <button id="tabNotes" onclick="setView('notes')">Bitácora</button>
+      <button id="tabExpenses" onclick="setView('expenses')">Gastos</button>
     </nav>
   </header>
 
-  <div id="loading-screen" class="loading">Cargando datos...</div>
-
-  <!-- TAREAS -->
-  <div id="view-tareas" style="display:none">
-    <div class="toolbar">
-      <button class="btn-main" onclick="openModal('tarea')">+ Nueva Tarea</button>
+  <div class="topbar">
+    <div class="row">
+      <button class="btn-main" id="primaryAction" onclick="openTaskModal()">Nueva tarea</button>
+      <button class="btn-ghost" onclick="exportCSV()">Exportar CSV</button>
+      <button class="btn-ghost" onclick="flushSave()">Guardar ahora</button>
     </div>
-    <div class="kanban" id="kanban-board"></div>
-  </div>
 
-  <!-- FACTURAS -->
-  <div id="view-facturas" style="display:none">
-    <div class="toolbar" style="justify-content:flex-start; max-width:1200px; margin:0 auto 18px;">
-      <button class="btn-main" onclick="openModal('factura')" style="background:var(--amarillo); color:#000">Nueva Factura</button>
+    <div class="sync-pill" title="Estado de sincronización">
+      <span id="syncDot" class="dot ok"></span>
+      <span id="syncText">Sincronizado</span>
     </div>
-    <div class="grid-3" id="invoice-board"></div>
   </div>
 
-  <!-- CLIENTES -->
-  <div id="view-clientes" style="display:none">
-    <button class="btn-main" onclick="openModal('cliente')">+ Agregar Cliente</button>
-    <button onclick="exportarCSV()" style="background:none; color:#888; border:1px solid #555; padding:10px; border-radius:10px; cursor:pointer; margin-left:10px">Exportar CSV</button>
-    <div id="clients-list" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; margin-top:20px"></div>
+  <!-- =========================
+       VIEW: TASKS
+  ========================== -->
+  <section id="viewTasks" class="view active">
+    <div class="kanban" id="kanban"></div>
+  </section>
+
+  <!-- =========================
+       VIEW: INVOICES
+  ========================== -->
+  <section id="viewInvoices" class="view">
+    <div class="grid-3" style="margin-bottom: 18px;">
+      <div class="stat-box">
+        <div style="font-size:11px; opacity:.7; font-weight:900; letter-spacing:1px; text-transform:uppercase;">Total unpaid</div>
+        <div class="amount" id="unpaidTotal">$0</div>
+        <div style="font-size:11px; opacity:.65;">Facturas pendientes</div>
+      </div>
+      <div class="stat-box">
+        <div style="font-size:11px; opacity:.7; font-weight:900; letter-spacing:1px; text-transform:uppercase;">Total paid</div>
+        <div class="amount" id="paidTotal">$0</div>
+        <div style="font-size:11px; opacity:.65;">Facturas pagadas</div>
+      </div>
+      <div class="stat-box">
+        <div style="font-size:11px; opacity:.7; font-weight:900; letter-spacing:1px; text-transform:uppercase;">This month</div>
+        <div class="amount" id="monthTotal">$0</div>
+        <div style="font-size:11px; opacity:.65;">Total del mes (pagadas)</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="row" style="justify-content: space-between;">
+        <h2 style="margin:0;">Facturas</h2>
+        <button class="btn-main" onclick="openInvoiceModal()">Nueva factura</button>
+      </div>
+      <div class="list" id="invoiceList"></div>
+    </div>
+  </section>
+
+  <!-- =========================
+       VIEW: NOTES (BITÁCORA)
+  ========================== -->
+  <section id="viewNotes" class="view">
+    <div class="panel">
+      <h2>Bitácora por cliente</h2>
+
+      <div class="grid">
+        <div>
+          <label>Cliente</label>
+          <select id="notesClient"></select>
+          <div class="note-meta">Tip: si no existe el cliente, créalo en “Clientes” (lo agregamos en el modal de tarea/factura).</div>
+        </div>
+        <div>
+          <label>Búsqueda</label>
+          <input id="notesSearch" placeholder="Buscar en notas…" oninput="renderNotes()" />
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <label>Nueva nota</label>
+        <textarea id="noteText" placeholder="Ej: Hoy configuré SPF/DKIM/DMARC, habilité MFA y revisé buzones…"></textarea>
+        <div class="footer-actions">
+          <button class="btn-ghost" onclick="clearNote()">Limpiar</button>
+          <button class="btn-main" onclick="addNote()">Agregar nota</button>
+        </div>
+      </div>
+
+      <div class="list" id="notesList"></div>
+    </div>
+  </section>
+
+  <!-- =========================
+       VIEW: EXPENSES
+  ========================== -->
+  <section id="viewExpenses" class="view">
+    <div class="panel">
+      <div class="row" style="justify-content: space-between;">
+        <h2 style="margin:0;">Gastos</h2>
+        <div class="row">
+          <select id="expenseMonth" onchange="renderExpenses()"></select>
+          <div class="sync-pill" style="padding:7px 10px;">
+            <span class="dot ok"></span>
+            <span id="expenseTotal">Total: $0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top: 12px;">
+        <div>
+          <label>Proveedor</label>
+          <input id="expVendor" placeholder="Ej: Microsoft, GoDaddy, Ubiquiti…" />
+        </div>
+        <div>
+          <label>Categoría</label>
+          <input id="expCategory" placeholder="Ej: Licencias, Hosting, Hardware, Transporte…" />
+        </div>
+        <div>
+          <label>Monto (USD)</label>
+          <input id="expAmount" type="number" step="0.01" placeholder="Ej: 74.00" />
+        </div>
+        <div>
+          <label>Nota</label>
+          <input id="expNotes" placeholder="Opcional" />
+        </div>
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn-main" onclick="addExpense()">Agregar gasto</button>
+      </div>
+
+      <div class="list" id="expensesList"></div>
+    </div>
+  </section>
+
+  <!-- =========================
+       MODAL: TASK
+  ========================== -->
+  <div class="modal" id="taskModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <p class="modal-title">Nueva tarea</p>
+        <button class="modal-close" onclick="closeTaskModal()">Cerrar</button>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>Título</label>
+          <input id="taskTitle" placeholder="Ej: Migración correo / Instalar AP / Revisar DMARC…" />
+        </div>
+        <div>
+          <label>Cliente</label>
+          <select id="taskClient"></select>
+          <div class="note-meta" style="margin-top:8px;">
+            Si el cliente no existe, escríbelo aquí:
+          </div>
+          <input id="newClientName" placeholder="Ej: MCI, K2 Escrow, NALÁ…" />
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <label>Descripción</label>
+        <textarea id="taskDesc" placeholder="Detalles rápidos…"></textarea>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <label>Estado</label>
+        <select id="taskStage"></select>
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn-ghost" onclick="closeTaskModal()">Cancelar</button>
+        <button class="btn-main" onclick="createTask()">Guardar</button>
+      </div>
+    </div>
   </div>
 
-  <!-- MODAL -->
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <h3 id="modal-title" style="color:var(--amarillo)">AÑADIR</h3>
-      <div id="modal-fields"></div>
-      <div style="display:flex; gap:10px; margin-top:15px">
-        <button onclick="closeModal()" style="background:none; border:none; color:#777; cursor:pointer; flex:1">Cerrar</button>
-        <button onclick="save()" style="background:var(--oliva); color:white; border:none; padding:12px; border-radius:10px; cursor:pointer; font-weight:bold; flex:1">Guardar</button>
+  <!-- =========================
+       MODAL: INVOICE
+  ========================== -->
+  <div class="modal" id="invoiceModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <p class="modal-title">Nueva factura</p>
+        <button class="modal-close" onclick="closeInvoiceModal()">Cerrar</button>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>Concepto</label>
+          <input id="invTitle" placeholder="Ej: Soporte mensual / Migración / Visita técnica…" />
+        </div>
+        <div>
+          <label>Cliente</label>
+          <select id="invClient"></select>
+          <div class="note-meta" style="margin-top:8px;">
+            Si el cliente no existe, escríbelo aquí:
+          </div>
+          <input id="newInvClientName" placeholder="Ej: AENSA, MCI, etc." />
+        </div>
+        <div>
+          <label>Monto (USD)</label>
+          <input id="invAmount" type="number" step="0.01" placeholder="Ej: 500.00" />
+        </div>
+        <div>
+          <label>Estado</label>
+          <select id="invPaid">
+            <option value="unpaid">Unpaid</option>
+            <option value="paid">Paid</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <label>Nota</label>
+        <input id="invNote" placeholder="Opcional" />
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn-ghost" onclick="closeInvoiceModal()">Cancelar</button>
+        <button class="btn-main" onclick="createInvoice()">Guardar</button>
       </div>
     </div>
   </div>
 
   <script>
-    // =========================================
-    // CONFIG: Google Apps Script Web App URL
-    // =========================================
-    const SHEETS_API_URL = "/api/sheets";
+    // ==========================================================
+    // CONFIG
+    // ==========================================================
+    const API = "/api/sheets";
 
+    // Estados (simplificados como pediste)
+    const STAGES = [
+      { id: "to_do", label: "To-do" },
+      { id: "pending_3rd_party", label: "Pending 3rd party" },
+      { id: "done", label: "Done" }
+    ];
 
-    // =========================
-    // Helpers
-    // =========================
     const $ = (id) => document.getElementById(id);
-
-    const STAGES = ["to-do", "in progress", "work on it", "pending 3 party", "cancelled", "done"];
 
     const uid = () =>
       (crypto?.randomUUID?.() ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2));
 
-    // =========================
-    // Sync Badge
-    // =========================
-    function showSyncBadge() {
-      const badge = $('sync-badge');
-      badge.style.display = 'flex';
-      setTimeout(() => {
-        badge.style.display = 'none';
-      }, 2000);
+    function isoNow() { return new Date().toISOString(); }
+
+    function money(n) {
+      const v = Number(n || 0);
+      return "$" + v.toFixed(2);
     }
 
-    // =========================
-    // Google Sheets DB (Apps Script) - ROBUST
-    // =========================
+    function monthKey(iso) {
+      const d = iso ? new Date(iso) : new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      return `${y}-${m}`;
+    }
+
+    function fmtDate(iso) {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleString("es-CR", { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+      } catch {
+        return iso || "";
+      }
+    }
+
+    // ==========================================================
+    // API helpers (robustos: siempre intentan JSON)
+    // ==========================================================
     async function apiGet(url) {
       const res = await fetch(url, { method: "GET", cache: "no-store" });
       const text = await res.text();
-
-      try {
-        const json = JSON.parse(text);
-        if (!res.ok) throw new Error("HTTP " + res.status + ": " + JSON.stringify(json));
-        return json;
-      } catch (e) {
-        throw new Error("Respuesta NO JSON (GET). Primeros 300 chars:\n" + text.slice(0, 300));
-      }
+      let json;
+      try { json = JSON.parse(text); }
+      catch { throw new Error("Respuesta NO JSON (GET): " + text.slice(0, 300)); }
+      if (!res.ok) throw new Error("HTTP " + res.status + ": " + JSON.stringify(json));
+      return json;
     }
 
     async function apiPost(url, payload) {
@@ -268,498 +699,802 @@
         body: JSON.stringify(payload),
         cache: "no-store"
       });
-
       const text = await res.text();
-
-      try {
-        const json = JSON.parse(text);
-        if (!res.ok) throw new Error("HTTP " + res.status + ": " + JSON.stringify(json));
-        return json;
-      } catch (e) {
-        throw new Error("Respuesta NO JSON (POST). Primeros 300 chars:\n" + text.slice(0, 300));
-      }
+      let json;
+      try { json = JSON.parse(text); }
+      catch { throw new Error("Respuesta NO JSON (POST): " + text.slice(0, 300)); }
+      if (!res.ok) throw new Error("HTTP " + res.status + ": " + JSON.stringify(json));
+      return json;
     }
 
-    async function loadDB() {
-      const out = await apiGet(`${SHEETS_API_URL}?action=load`);
-      if (!out.ok) throw new Error(out.error || "Error cargando DB");
+    // ==========================================================
+    // DB + PRO saving
+    // - Modo PRO: intenta acciones incrementales (task_upsert, note_add, expense_add...)
+    // - Fallback: guarda DB completa con debounce (igual funciona aunque el backend no esté listo)
+    // ==========================================================
+    let db = {
+      clients: [],
+      tasks: [],
+      invoices: [],
+      notes: {},     // { [clientId]: [ {id, ts, text} ] }
+      expenses: []   // [ {id, ts, vendor, category, amount, notes} ]
+    };
 
-      const data = out.data || { clients: [], tasks: [], invoices: [] };
-      data.invoices = (data.invoices || []).map(i => ({ ...i, m: Number(i.m || 0) }));
+    // ---- Sync state
+    let saveTimer = null;
+    let isSaving = false;
+    let saveQueued = false;
+    let lastSaveAt = 0;
 
-      return {
-        clients: Array.isArray(data.clients) ? data.clients : [],
-        tasks: Array.isArray(data.tasks) ? data.tasks : [],
-        invoices: Array.isArray(data.invoices) ? data.invoices : [],
-      };
+    function setSync(status, text) {
+      const dot = $("syncDot");
+      const t = $("syncText");
+      dot.classList.remove("ok","pending","err");
+      dot.classList.add(status);
+      t.textContent = text;
     }
 
-    async function saveDB() {
+    function requestSave() {
+      saveQueued = true;
+      setSync("pending", "Pendiente de guardar…");
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(flushSave, 700);
+    }
+
+    async function flushSave() {
+      if (!saveQueued) { setSync("ok", "Sincronizado"); return true; }
+      if (isSaving) return true;
+
+      isSaving = true;
+      setSync("pending", "Guardando…");
+
       try {
-        const out = await apiPost(SHEETS_API_URL, { action: "save", data: db });
+        const now = Date.now();
+        const elapsed = now - lastSaveAt;
+        if (elapsed < 400) await new Promise(r => setTimeout(r, 400 - elapsed));
+
+        const out = await apiPost(API, { action: "save", data: db });
         if (!out.ok) throw new Error(out.error || "Save no ok");
-        showSyncBadge();
+
+        lastSaveAt = Date.now();
+        saveQueued = false;
+        setSync("ok", "Sincronizado");
         return true;
       } catch (e) {
         console.error("SAVE ERROR:", e);
-        alert("No se pudo guardar:\n" + (e?.message || e));
+        setSync("err", "Error al guardar");
+        return false;
+      } finally {
+        isSaving = false;
+        if (saveQueued) {
+          clearTimeout(saveTimer);
+          saveTimer = setTimeout(flushSave, 600);
+        }
+      }
+    }
+
+    // PRO incremental call. Si falla/no existe, hace fallback a requestSave()
+    async function tryProAction(action, payload, fallbackMutator) {
+      // Aplica cambios localmente primero (UI rápida)
+      if (typeof fallbackMutator === "function") fallbackMutator();
+
+      // Intento PRO: backend incremental
+      try {
+        const out = await apiPost(API, { action, ...payload });
+        if (out?.ok) {
+          setSync("ok", "Sincronizado");
+          return true;
+        }
+        // Si backend responde ok:false, cae a fallback
+        requestSave();
+        return false;
+      } catch (e) {
+        // Backend aún no tiene esa acción -> fallback
+        requestSave();
         return false;
       }
     }
 
+    async function loadDB() {
+      const out = await apiGet(`${API}?action=load`);
+      if (!out.ok) throw new Error(out.error || "Error cargando DB");
+
+      const data = out.data || {};
+      db.clients = Array.isArray(data.clients) ? data.clients : [];
+      db.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+      db.invoices = Array.isArray(data.invoices) ? data.invoices : [];
+      db.notes = (data.notes && typeof data.notes === "object") ? data.notes : {};
+      db.expenses = Array.isArray(data.expenses) ? data.expenses : [];
+
+      // Normaliza montos
+      db.invoices = db.invoices.map(i => ({ ...i, m: Number(i.m || 0) }));
+      db.expenses = db.expenses.map(x => ({ ...x, amount: Number(x.amount || 0) }));
+
+      // Migración de stages viejos (por si hay data histórica)
+      const map = { "in progress": "to_do", "work on it": "to_do", "cancelled": "done" };
+      db.tasks.forEach(t => {
+        const s = String(t.s || "");
+        if (map[s]) t.s = map[s];
+        // si venía en formato viejo con guiones
+        if (s === "to-do") t.s = "to_do";
+        if (s === "pending 3 party") t.s = "pending_3rd_party";
+        if (s === "done") t.s = "done";
+      });
+
+      setSync("ok", "Sincronizado");
+    }
+
+    // ==========================================================
+    // Clients
+    // ==========================================================
     function clientNameById(id) {
       if (!id) return "";
       const c = db.clients.find(x => String(x.id) === String(id));
       return c ? c.n : "";
     }
 
-    function buildClientSelect(selectId, selectedClientId = "") {
-      const select = document.createElement("select");
-      select.id = selectId;
+    function ensureClient(name) {
+      const n = (name || "").trim();
+      if (!n) return "";
 
-      const optNone = document.createElement("option");
-      optNone.value = "";
-      optNone.textContent = "Sin cliente (opcional)";
-      select.appendChild(optNone);
+      const existing = db.clients.find(c => c.n.toLowerCase() === n.toLowerCase());
+      if (existing) return existing.id;
 
-      db.clients.forEach(c => {
-        const o = document.createElement("option");
-        o.value = c.id;
-        o.textContent = c.n;
-        if (String(selectedClientId) === String(c.id)) o.selected = true;
-        select.appendChild(o);
-      });
-
-      return select;
+      const id = uid();
+      db.clients.push({ id, n });
+      return id;
     }
 
-    // Escape CSV fields properly
+    function fillClientSelect(selectId, includeNone = true, selected = "") {
+      const sel = $(selectId);
+      sel.innerHTML = "";
+      if (includeNone) {
+        const o = document.createElement("option");
+        o.value = "";
+        o.textContent = "Sin cliente (opcional)";
+        sel.appendChild(o);
+      }
+      db.clients
+        .slice()
+        .sort((a,b) => a.n.localeCompare(b.n))
+        .forEach(c => {
+          const o = document.createElement("option");
+          o.value = c.id;
+          o.textContent = c.n;
+          if (String(selected) === String(c.id)) o.selected = true;
+          sel.appendChild(o);
+        });
+    }
+
+    // ==========================================================
+    // View switching
+    // ==========================================================
+    function setView(v) {
+      const tabs = {
+        tasks: "tabTasks",
+        invoices: "tabInvoices",
+        notes: "tabNotes",
+        expenses: "tabExpenses"
+      };
+
+      Object.values(tabs).forEach(id => $(id).classList.remove("active"));
+      $("viewTasks").classList.remove("active");
+      $("viewInvoices").classList.remove("active");
+      $("viewNotes").classList.remove("active");
+      $("viewExpenses").classList.remove("active");
+
+      if (v === "tasks") {
+        $(tabs.tasks).classList.add("active");
+        $("viewTasks").classList.add("active");
+        $("primaryAction").textContent = "Nueva tarea";
+        $("primaryAction").onclick = openTaskModal;
+      } else if (v === "invoices") {
+        $(tabs.invoices).classList.add("active");
+        $("viewInvoices").classList.add("active");
+        $("primaryAction").textContent = "Nueva factura";
+        $("primaryAction").onclick = openInvoiceModal;
+      } else if (v === "notes") {
+        $(tabs.notes).classList.add("active");
+        $("viewNotes").classList.add("active");
+        $("primaryAction").textContent = "Agregar nota";
+        $("primaryAction").onclick = () => { $("noteText").focus(); };
+      } else if (v === "expenses") {
+        $(tabs.expenses).classList.add("active");
+        $("viewExpenses").classList.add("active");
+        $("primaryAction").textContent = "Agregar gasto";
+        $("primaryAction").onclick = () => { $("expVendor").focus(); };
+      }
+    }
+
+    // ==========================================================
+    // TASKS
+    // Task model (compatible con tu estilo anterior):
+    // { id, n: title, d: desc, c: clientId, s: stageId, ts }
+    // ==========================================================
+    function stageLabel(id) {
+      const s = STAGES.find(x => x.id === id);
+      return s ? s.label : id;
+    }
+
+    function renderKanban() {
+      const root = $("kanban");
+      root.innerHTML = "";
+
+      STAGES.forEach(stage => {
+        const col = document.createElement("div");
+        col.className = "column";
+
+        const tasks = db.tasks.filter(t => t.s === stage.id);
+        const head = document.createElement("div");
+        head.className = "col-header";
+        head.innerHTML = `<span>${stage.label}</span><span class="count">${tasks.length}</span>`;
+        col.appendChild(head);
+
+        tasks
+          .slice()
+          .sort((a,b) => String(b.ts||"").localeCompare(String(a.ts||"")))
+          .forEach(t => col.appendChild(taskCard(t)));
+
+        root.appendChild(col);
+      });
+    }
+
+    function taskCard(t) {
+      const div = document.createElement("div");
+      div.className = "card";
+
+      const title = document.createElement("div");
+      title.className = "card-title";
+      title.textContent = t.n || "(Sin título)";
+
+      const desc = document.createElement("div");
+      desc.className = "card-desc";
+      desc.textContent = t.d || "";
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+
+      const badge = document.createElement("div");
+      badge.className = "badge";
+      badge.textContent = clientNameById(t.c) || "Sin cliente";
+
+      const del = document.createElement("button");
+      del.className = "btn-del";
+      del.textContent = "Borrar";
+      del.onclick = () => deleteTask(t.id);
+
+      meta.appendChild(badge);
+      meta.appendChild(del);
+
+      const sel = document.createElement("select");
+      STAGES.forEach(s => {
+        const o = document.createElement("option");
+        o.value = s.id;
+        o.textContent = s.label;
+        if (t.s === s.id) o.selected = true;
+        sel.appendChild(o);
+      });
+
+      sel.onchange = () => moveTask(t.id, sel.value);
+
+      div.appendChild(title);
+      if ((t.d || "").trim()) div.appendChild(desc);
+      div.appendChild(meta);
+      div.appendChild(sel);
+
+      return div;
+    }
+
+    function openTaskModal() {
+      fillClientSelect("taskClient", true, "");
+      $("newClientName").value = "";
+      $("taskTitle").value = "";
+      $("taskDesc").value = "";
+
+      const stageSel = $("taskStage");
+      stageSel.innerHTML = "";
+      STAGES.forEach(s => {
+        const o = document.createElement("option");
+        o.value = s.id;
+        o.textContent = s.label;
+        stageSel.appendChild(o);
+      });
+      stageSel.value = "to_do";
+
+      $("taskModal").classList.add("open");
+      $("taskTitle").focus();
+    }
+
+    function closeTaskModal() {
+      $("taskModal").classList.remove("open");
+    }
+
+    async function createTask() {
+      const title = $("taskTitle").value.trim();
+      const desc = $("taskDesc").value.trim();
+      const stage = $("taskStage").value;
+      let clientId = $("taskClient").value;
+
+      const newClient = $("newClientName").value.trim();
+      if (newClient) clientId = ensureClient(newClient);
+
+      if (!title) { alert("Poné un título."); return; }
+
+      const task = { id: uid(), n: title, d: desc, c: clientId || "", s: stage, ts: isoNow() };
+
+      await tryProAction(
+        "task_upsert",
+        { task },
+        () => { db.tasks.unshift(task); renderKanban(); }
+      );
+
+      // Como tocamos clientes
+      fillClientSelect("notesClient", true, $("notesClient").value);
+      fillClientSelect("taskClient", true, clientId);
+      fillClientSelect("invClient", true, $("invClient")?.value || "");
+
+      closeTaskModal();
+    }
+
+    async function moveTask(taskId, newStage) {
+      await tryProAction(
+        "task_move",
+        { id: taskId, s: newStage },
+        () => {
+          const t = db.tasks.find(x => x.id === taskId);
+          if (!t) return;
+          t.s = newStage;
+          t.ts = isoNow();
+          renderKanban();
+        }
+      );
+    }
+
+    async function deleteTask(taskId) {
+      if (!confirm("¿Borrar esta tarea?")) return;
+
+      await tryProAction(
+        "task_delete",
+        { id: taskId },
+        () => {
+          db.tasks = db.tasks.filter(t => t.id !== taskId);
+          renderKanban();
+        }
+      );
+    }
+
+    // ==========================================================
+    // INVOICES
+    // Invoice model: { id, t:title, c:clientId, m:amount, p:"paid|unpaid", n:note, ts }
+    // ==========================================================
+    function openInvoiceModal() {
+      fillClientSelect("invClient", true, "");
+      $("newInvClientName").value = "";
+      $("invTitle").value = "";
+      $("invAmount").value = "";
+      $("invPaid").value = "unpaid";
+      $("invNote").value = "";
+      $("invoiceModal").classList.add("open");
+      $("invTitle").focus();
+    }
+
+    function closeInvoiceModal() {
+      $("invoiceModal").classList.remove("open");
+    }
+
+    async function createInvoice() {
+      const title = $("invTitle").value.trim();
+      let clientId = $("invClient").value;
+      const newClient = $("newInvClientName").value.trim();
+      if (newClient) clientId = ensureClient(newClient);
+
+      const amt = Number($("invAmount").value || 0);
+      const paid = $("invPaid").value;
+      const note = $("invNote").value.trim();
+
+      if (!title) { alert("Poné un concepto."); return; }
+      if (!(amt > 0)) { alert("Monto inválido."); return; }
+
+      const inv = { id: uid(), t: title, c: clientId || "", m: amt, p: paid, n: note, ts: isoNow() };
+
+      await tryProAction(
+        "invoice_upsert",
+        { invoice: inv },
+        () => { db.invoices.unshift(inv); renderInvoices(); }
+      );
+
+      fillClientSelect("notesClient", true, $("notesClient").value);
+      closeInvoiceModal();
+    }
+
+    async function setInvoicePaid(id, paid) {
+      await tryProAction(
+        "invoice_paid",
+        { id, p: paid },
+        () => {
+          const inv = db.invoices.find(x => x.id === id);
+          if (!inv) return;
+          inv.p = paid;
+          inv.ts = isoNow();
+          renderInvoices();
+        }
+      );
+    }
+
+    async function deleteInvoice(id) {
+      if (!confirm("¿Borrar esta factura?")) return;
+
+      await tryProAction(
+        "invoice_delete",
+        { id },
+        () => {
+          db.invoices = db.invoices.filter(x => x.id !== id);
+          renderInvoices();
+        }
+      );
+    }
+
+    function renderInvoices() {
+      // Stats
+      const unpaid = db.invoices.filter(i => i.p !== "paid").reduce((s,i) => s + Number(i.m||0), 0);
+      const paid = db.invoices.filter(i => i.p === "paid").reduce((s,i) => s + Number(i.m||0), 0);
+
+      const thisMonth = monthKey(new Date().toISOString());
+      const paidThisMonth = db.invoices
+        .filter(i => i.p === "paid" && monthKey(i.ts) === thisMonth)
+        .reduce((s,i) => s + Number(i.m||0), 0);
+
+      $("unpaidTotal").textContent = money(unpaid);
+      $("paidTotal").textContent = money(paid);
+      $("monthTotal").textContent = money(paidThisMonth);
+
+      // List
+      const list = $("invoiceList");
+      list.innerHTML = "";
+
+      db.invoices
+        .slice()
+        .sort((a,b) => String(b.ts||"").localeCompare(String(a.ts||"")))
+        .forEach(inv => {
+          const row = document.createElement("div");
+          row.className = "inv-row";
+
+          const info = document.createElement("div");
+          info.className = "inv-info";
+
+          const title = document.createElement("div");
+          title.className = "inv-title";
+          title.textContent = `${inv.t} — ${money(inv.m)}`;
+
+          const sub = document.createElement("div");
+          sub.className = "inv-sub";
+          const cn = clientNameById(inv.c) || "Sin cliente";
+          sub.textContent = `${cn} • ${fmtDate(inv.ts)}${inv.n ? " • " + inv.n : ""}`;
+
+          info.appendChild(title);
+          info.appendChild(sub);
+
+          const actions = document.createElement("div");
+          actions.className = "inv-actions";
+
+          const sel = document.createElement("select");
+          const o1 = document.createElement("option");
+          o1.value = "unpaid"; o1.textContent = "Unpaid";
+          const o2 = document.createElement("option");
+          o2.value = "paid"; o2.textContent = "Paid";
+          sel.appendChild(o1); sel.appendChild(o2);
+          sel.value = inv.p === "paid" ? "paid" : "unpaid";
+          sel.onchange = () => setInvoicePaid(inv.id, sel.value);
+
+          const del = document.createElement("button");
+          del.className = "btn-del";
+          del.textContent = "Borrar";
+          del.onclick = () => deleteInvoice(inv.id);
+
+          actions.appendChild(sel);
+          actions.appendChild(del);
+
+          row.appendChild(info);
+          row.appendChild(actions);
+
+          list.appendChild(row);
+        });
+    }
+
+    // ==========================================================
+    // NOTES (BITÁCORA)
+    // Note model: { id, ts, text }
+    // ==========================================================
+    function setupNotesClientSelect() {
+      fillClientSelect("notesClient", true, $("notesClient")?.value || "");
+      $("notesClient").onchange = renderNotes;
+    }
+
+    function clearNote() {
+      $("noteText").value = "";
+    }
+
+    async function addNote() {
+      const clientId = $("notesClient").value;
+      const text = $("noteText").value.trim();
+      if (!clientId) { alert("Seleccioná un cliente."); return; }
+      if (!text) { alert("Escribí una nota."); return; }
+
+      const note = { id: uid(), ts: isoNow(), text };
+
+      await tryProAction(
+        "note_add",
+        { clientId, note },
+        () => {
+          if (!db.notes) db.notes = {};
+          if (!db.notes[clientId]) db.notes[clientId] = [];
+          db.notes[clientId].unshift(note);
+          renderNotes();
+        }
+      );
+
+      $("noteText").value = "";
+    }
+
+    function renderNotes() {
+      const clientId = $("notesClient").value;
+      const q = ($("notesSearch").value || "").trim().toLowerCase();
+      const root = $("notesList");
+      root.innerHTML = "";
+
+      if (!clientId) {
+        const x = document.createElement("div");
+        x.className = "note-item";
+        x.textContent = "Seleccioná un cliente para ver la bitácora.";
+        root.appendChild(x);
+        return;
+      }
+
+      const notes = (db.notes && db.notes[clientId]) ? db.notes[clientId] : [];
+      const filtered = q
+        ? notes.filter(n => String(n.text||"").toLowerCase().includes(q))
+        : notes;
+
+      if (!filtered.length) {
+        const x = document.createElement("div");
+        x.className = "note-item";
+        x.textContent = "No hay notas todavía.";
+        root.appendChild(x);
+        return;
+      }
+
+      filtered.forEach(n => {
+        const item = document.createElement("div");
+        item.className = "note-item";
+
+        const txt = document.createElement("div");
+        txt.style.whiteSpace = "pre-wrap";
+        txt.style.wordBreak = "break-word";
+        txt.textContent = n.text || "";
+
+        const meta = document.createElement("div");
+        meta.className = "note-meta";
+        meta.textContent = fmtDate(n.ts);
+
+        item.appendChild(txt);
+        item.appendChild(meta);
+        root.appendChild(item);
+      });
+    }
+
+    // ==========================================================
+    // EXPENSES
+    // Expense model: { id, ts, vendor, category, amount, notes }
+    // ==========================================================
+    function buildMonthOptions() {
+      const sel = $("expenseMonth");
+      sel.innerHTML = "";
+
+      const months = new Set(db.expenses.map(e => monthKey(e.ts)));
+      months.add(monthKey(new Date().toISOString()));
+
+      const arr = Array.from(months).sort().reverse();
+      arr.forEach(m => {
+        const o = document.createElement("option");
+        o.value = m;
+        o.textContent = m;
+        sel.appendChild(o);
+      });
+
+      sel.value = sel.value || arr[0] || monthKey(new Date().toISOString());
+    }
+
+    async function addExpense() {
+      const vendor = $("expVendor").value.trim();
+      const category = $("expCategory").value.trim();
+      const amount = Number($("expAmount").value || 0);
+      const notes = $("expNotes").value.trim();
+
+      if (!vendor) { alert("Poné el proveedor."); return; }
+      if (!(amount > 0)) { alert("Monto inválido."); return; }
+
+      const expense = { id: uid(), ts: isoNow(), vendor, category, amount, notes };
+
+      await tryProAction(
+        "expense_add",
+        { expense },
+        () => {
+          db.expenses.unshift(expense);
+          buildMonthOptions();
+          renderExpenses();
+        }
+      );
+
+      $("expVendor").value = "";
+      $("expCategory").value = "";
+      $("expAmount").value = "";
+      $("expNotes").value = "";
+    }
+
+    function renderExpenses() {
+      buildMonthOptions();
+      const month = $("expenseMonth").value;
+
+      const items = db.expenses
+        .filter(e => monthKey(e.ts) === month)
+        .slice()
+        .sort((a,b) => String(b.ts||"").localeCompare(String(a.ts||"")));
+
+      const total = items.reduce((s,e) => s + Number(e.amount || 0), 0);
+      $("expenseTotal").textContent = "Total: " + money(total);
+
+      const root = $("expensesList");
+      root.innerHTML = "";
+
+      if (!items.length) {
+        const x = document.createElement("div");
+        x.className = "expense-item";
+        x.textContent = "No hay gastos para este mes.";
+        root.appendChild(x);
+        return;
+      }
+
+      items.forEach(e => {
+        const item = document.createElement("div");
+        item.className = "expense-item";
+
+        const line1 = document.createElement("div");
+        line1.style.fontWeight = "900";
+        line1.style.fontSize = "12px";
+        line1.textContent = `${e.vendor} — ${money(e.amount)}`;
+
+        const line2 = document.createElement("div");
+        line2.className = "expense-meta";
+        const cat = e.category ? ` • ${e.category}` : "";
+        const n = e.notes ? ` • ${e.notes}` : "";
+        line2.textContent = `${fmtDate(e.ts)}${cat}${n}`;
+
+        item.appendChild(line1);
+        item.appendChild(line2);
+
+        root.appendChild(item);
+      });
+    }
+
+    // ==========================================================
+    // CSV Export (básico: tasks + invoices + expenses)
+    // ==========================================================
     function csvField(v) {
       const s = String(v ?? "");
       if (/[",\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
       return s;
     }
 
-    // =========================
-    // State
-    // =========================
-    let db = { clients: [], tasks: [], invoices: [] };
-    let activeType = "";
-    let modalContext = { stage: "to-do" };
+    function exportCSV() {
+      const lines = [];
 
-    // =========================
-    // Tabs
-    // =========================
-    window.changeTab = function changeTab(t) {
-      ["tareas", "facturas", "clientes"].forEach((v) => {
-        $("view-" + v).style.display = v === t ? "block" : "none";
-        $("btn-" + v).className = v === t ? "active" : "";
+      lines.push("SECTION,ID,DATE,CLIENT,TITLE,AMOUNT,STATUS,NOTES");
+      // Tasks
+      db.tasks.forEach(t => {
+        const c = clientNameById(t.c);
+        lines.push([
+          "TASK",
+          csvField(t.id),
+          csvField(t.ts),
+          csvField(c),
+          csvField(t.n),
+          "",
+          csvField(stageLabel(t.s)),
+          csvField(t.d || "")
+        ].join(","));
       });
-      render();
-    };
 
-    // =========================
-    // Modal
-    // =========================
-    window.openModal = function openModal(type, ctx = {}) {
-      activeType = type;
-      modalContext = { stage: "to-do", ...ctx };
-
-      $("modal-title").innerText = "NUEVO " + type.toUpperCase();
-      const f = $("modal-fields");
-      f.innerHTML = "";
-
-      if (type === "cliente") {
-        f.innerHTML = `
-          <input id="i1" placeholder="Nombre" autocomplete="name">
-          <input id="i2" placeholder="Email" autocomplete="email">
-        `;
-      }
-
-      if (type === "tarea") {
-        const ta = document.createElement("textarea");
-        ta.id = "i1";
-        ta.placeholder = "Descripción de la tarea";
-        ta.rows = 3;
-
-        const hint = document.createElement("div");
-        hint.className = "hint";
-        hint.textContent = "Podés ligarla a un cliente (opcional)";
-
-        const sel = buildClientSelect("i2", "");
-        f.appendChild(ta);
-        f.appendChild(hint);
-        f.appendChild(sel);
-      }
-
-      if (type === "factura") {
-        const ref = document.createElement("input");
-        ref.id = "i1";
-        ref.placeholder = "Nº de Referencia";
-
-        const monto = document.createElement("input");
-        monto.id = "i2";
-        monto.type = "number";
-        monto.placeholder = "Monto $";
-        monto.min = "0";
-        monto.step = "0.01";
-
-        const hint = document.createElement("div");
-        hint.className = "hint";
-        hint.textContent = "Cliente opcional (podés dejarlo en blanco)";
-
-        const clientSel = buildClientSelect("i4", "");
-
-        const estado = document.createElement("select");
-        estado.id = "i3";
-        estado.innerHTML = `
-          <option value="p">Por Cobrar</option>
-          <option value="pag">Pagada</option>
-          <option value="can">Cancelada</option>
-        `;
-
-        f.appendChild(ref);
-        f.appendChild(monto);
-        f.appendChild(hint);
-        f.appendChild(clientSel);
-        f.appendChild(estado);
-      }
-
-      $("modal").style.display = "flex";
-      setTimeout(() => $("i1")?.focus(), 0);
-    };
-
-    window.closeModal = function closeModal() {
-      $("modal").style.display = "none";
-    };
-
-    $("modal").addEventListener("click", (e) => {
-      if (e.target.id === "modal") closeModal();
-    });
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeModal();
-    });
-
-    window.save = async function save() {
-      const v1 = $("i1")?.value?.trim();
-      const v2 = $("i2")?.value?.trim();
-      const v3 = $("i3")?.value;
-      const v4 = $("i4")?.value;
-
-      if (!v1) return alert("El campo principal es obligatorio");
-
-      const now = new Date().toISOString();
-
-      if (activeType === "cliente") {
-        db.clients.push({ id: uid(), n: v1, e: v2 || "", createdAt: now });
-      }
-
-      if (activeType === "tarea") {
-        const clientId = $("i2")?.value || "";
-        db.tasks.push({
-          id: uid(),
-          t: v1,
-          s: modalContext.stage || "to-do",
-          cId: clientId || "",
-          createdAt: now
-        });
-      }
-
-      if (activeType === "factura") {
-        const monto = Number($("i2")?.value || 0);
-        const clientId = $("i4")?.value || "";
-        db.invoices.push({
-          id: uid(),
-          r: v1,
-          m: isFinite(monto) ? monto : 0,
-          s: v3 || "p",
-          cId: clientId || "",
-          createdAt: now
-        });
-      }
-
-      closeModal();
-
-      const ok = await saveDB();
-      if (!ok) return; // si falla, no renderices "como si" ya quedó persistido
-
-      // Recarga desde Sheets para confirmar que lo que ves es lo que está guardado
-      try {
-        db = await loadDB();
-      } catch (e) {
-        console.warn("No se pudo recargar DB tras guardar:", e);
-      }
-
-      render();
-    };
-
-    // =========================
-    // Render
-    // =========================
-    function render() {
-      renderKanban();
-      renderInvoices();
-      renderClients();
-    }
-
-    function renderKanban() {
-      const board = $("kanban-board");
-      board.innerHTML = "";
-
-      STAGES.forEach((stage) => {
-        const col = document.createElement("div");
-        col.className = "column";
-
-        const header = document.createElement("div");
-        header.className = "col-header";
-        header.textContent = stage;
-
-        const list = document.createElement("div");
-
-        db.tasks
-          .filter((t) => t.s === stage)
-          .forEach((t) => {
-            const card = document.createElement("div");
-            card.className = "card";
-
-            const p = document.createElement("p");
-            p.textContent = t.t;
-            card.appendChild(p);
-
-            const meta = document.createElement("div");
-            meta.className = "meta";
-
-            const cname = clientNameById(t.cId);
-            const badge = document.createElement("div");
-            badge.className = "badge";
-            badge.textContent = "Cliente: " + (cname || "Sin cliente");
-            meta.appendChild(badge);
-
-            const del = document.createElement("button");
-            del.className = "btn-del";
-            del.textContent = "Borrar";
-            del.addEventListener("click", () => {
-              const ok = confirm("¿Borrar esta tarea?");
-              if (!ok) return;
-              deleteTask(t.id);
-            });
-            meta.appendChild(del);
-
-            card.appendChild(meta);
-
-            const sel = document.createElement("select");
-            STAGES.forEach((opt) => {
-              const o = document.createElement("option");
-              o.value = opt;
-              o.textContent = opt;
-              if (opt === stage) o.selected = true;
-              sel.appendChild(o);
-            });
-            sel.addEventListener("change", (e) => moveTask(t.id, e.target.value));
-            card.appendChild(sel);
-
-            list.appendChild(card);
-          });
-
-        col.appendChild(header);
-        col.appendChild(list);
-        board.appendChild(col);
+      // Invoices
+      db.invoices.forEach(i => {
+        const c = clientNameById(i.c);
+        lines.push([
+          "INVOICE",
+          csvField(i.id),
+          csvField(i.ts),
+          csvField(c),
+          csvField(i.t),
+          csvField(i.m),
+          csvField(i.p),
+          csvField(i.n || "")
+        ].join(","));
       });
-    }
 
-    function renderInvoices() {
-      const fin = $("invoice-board");
-      if (!fin) return;
-
-      const total = (st) =>
-        db.invoices
-          .filter((i) => i.s === st)
-          .reduce((acc, v) => acc + Number(v.m || 0), 0);
-
-      fin.innerHTML = "";
-
-      const groups = [
-        { l: "Por Cobrar", s: "p", c: "var(--amarillo)" },
-        { l: "Pagadas", s: "pag", c: "var(--oliva)" },
-        { l: "Canceladas", s: "can", c: "#ff4444" },
-      ];
-
-      groups.forEach((g) => {
-        const box = document.createElement("div");
-        box.className = "stat-box";
-
-        const title = document.createElement("div");
-        title.style.fontSize = "10px";
-        title.style.opacity = "0.4";
-        title.style.fontWeight = "bold";
-        title.textContent = g.l.toUpperCase();
-
-        const amt = document.createElement("div");
-        amt.className = "amount";
-        amt.style.color = g.c;
-        amt.textContent =
-          "$" + total(g.s).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-
-        box.appendChild(title);
-        box.appendChild(amt);
-
-        const list = db.invoices.filter((i) => i.s === g.s);
-
-        if (list.length === 0) {
-          const empty = document.createElement("div");
-          empty.style.fontSize = "11px";
-          empty.style.opacity = "0.4";
-          empty.style.paddingTop = "6px";
-          empty.textContent = "Sin facturas en esta categoría.";
-          box.appendChild(empty);
-        } else {
-          list.forEach((inv) => {
-            const row = document.createElement("div");
-            row.className = "inv-row";
-
-            const info = document.createElement("div");
-            info.className = "inv-info";
-
-            const line1 = document.createElement("div");
-            line1.className = "inv-title";
-            line1.textContent = `#${inv.r} — $${Number(inv.m || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
-
-            const cname = clientNameById(inv.cId);
-            const line2 = document.createElement("div");
-            line2.className = "inv-sub";
-            line2.textContent = cname ? `Cliente: ${cname}` : "Cliente: (sin asignar)";
-
-            info.appendChild(line1);
-            info.appendChild(line2);
-
-            const actions = document.createElement("div");
-            actions.className = "inv-actions";
-
-            const stSel = document.createElement("select");
-            [
-              {v:"p", l:"Por cobrar"},
-              {v:"pag", l:"Pagada"},
-              {v:"can", l:"Cancelada"},
-            ].forEach(opt => {
-              const o = document.createElement("option");
-              o.value = opt.v;
-              o.textContent = opt.l;
-              if (opt.v === inv.s) o.selected = true;
-              stSel.appendChild(o);
-            });
-            stSel.addEventListener("change", (e) => moveInvoice(inv.id, e.target.value));
-
-            const del = document.createElement("button");
-            del.className = "btn-del";
-            del.textContent = "Borrar";
-            del.addEventListener("click", () => {
-              const ok = confirm("¿Borrar esta factura?");
-              if (!ok) return;
-              deleteInvoice(inv.id);
-            });
-
-            actions.appendChild(stSel);
-            actions.appendChild(del);
-
-            row.appendChild(info);
-            row.appendChild(actions);
-
-            box.appendChild(row);
-          });
-        }
-
-        fin.appendChild(box);
+      // Expenses
+      db.expenses.forEach(e => {
+        lines.push([
+          "EXPENSE",
+          csvField(e.id),
+          csvField(e.ts),
+          "",
+          csvField(e.vendor + (e.category ? " (" + e.category + ")" : "")),
+          csvField(e.amount),
+          "",
+          csvField(e.notes || "")
+        ].join(","));
       });
-    }
 
-    function renderClients() {
-      const cl = $("clients-list");
-      if (!cl) return;
-
-      cl.innerHTML = "";
-      db.clients.forEach((c) => {
-        const box = document.createElement("div");
-        box.className = "stat-box";
-        box.style.padding = "20px";
-
-        const name = document.createElement("div");
-        name.style.fontWeight = "bold";
-        name.style.color = "var(--amarillo)";
-        name.style.marginBottom = "5px";
-        name.textContent = c.n;
-
-        const email = document.createElement("div");
-        email.style.fontSize = "11px";
-        email.style.opacity = "0.4";
-        email.textContent = c.e || "";
-
-        box.appendChild(name);
-        box.appendChild(email);
-        cl.appendChild(box);
-      });
-    }
-
-    // =========================
-    // Actions
-    // =========================
-    window.moveTask = async function moveTask(id, ns) {
-      db.tasks = db.tasks.map((t) => (t.id === id ? { ...t, s: ns } : t));
-      const ok = await saveDB();
-      if (!ok) return;
-      try { db = await loadDB(); } catch {}
-      render();
-    };
-
-    window.deleteTask = async function deleteTask(id) {
-      db.tasks = db.tasks.filter(t => t.id !== id);
-      const ok = await saveDB();
-      if (!ok) return;
-      try { db = await loadDB(); } catch {}
-      render();
-    };
-
-    window.moveInvoice = async function moveInvoice(id, ns) {
-      db.invoices = db.invoices.map((i) => (i.id === id ? { ...i, s: ns } : i));
-      const ok = await saveDB();
-      if (!ok) return;
-      try { db = await loadDB(); } catch {}
-      render();
-    };
-
-    window.deleteInvoice = async function deleteInvoice(id) {
-      db.invoices = db.invoices.filter(i => i.id !== id);
-      const ok = await saveDB();
-      if (!ok) return;
-      try { db = await loadDB(); } catch {}
-      render();
-    };
-
-    window.exportarCSV = function exportarCSV() {
-      const header = ["Nombre", "Email"].map(csvField).join(",");
-      const rows = db.clients.map((c) => [csvField(c.n), csvField(c.e)].join(","));
-      const csv = "\uFEFF" + header + "\n" + rows.join("\n");
-
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "clientes_bjt.csv";
+      a.href = url;
+      a.download = "bjt_control_panel_export.csv";
       a.click();
-      URL.revokeObjectURL(a.href);
-    };
+      URL.revokeObjectURL(url);
+    }
 
-    // =========================
+    // ==========================================================
     // Init
-    // =========================
+    // ==========================================================
+    function fillStageSelect() {
+      const s = $("taskStage");
+      s.innerHTML = "";
+      STAGES.forEach(x => {
+        const o = document.createElement("option");
+        o.value = x.id;
+        o.textContent = x.label;
+        s.appendChild(o);
+      });
+    }
+
     async function init() {
       try {
-        db = await loadDB();
-        $('loading-screen').style.display = 'none';
-        changeTab('tareas');
-        render();
-      } catch (error) {
-        console.error('Error loading data:', error);
-        $('loading-screen').style.whiteSpace = 'pre-wrap';
-        $('loading-screen').innerText = 'Error al cargar datos:\n' + (error?.message || error);
+        setSync("pending", "Cargando…");
+        await loadDB();
+
+        // Selects
+        fillStageSelect();
+        fillClientSelect("taskClient", true, "");
+        fillClientSelect("invClient", true, "");
+        setupNotesClientSelect();
+
+        // Render
+        renderKanban();
+        renderInvoices();
+        buildMonthOptions();
+        renderExpenses();
+        renderNotes();
+
+        // Cierra modales con ESC
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            closeTaskModal();
+            closeInvoiceModal();
+          }
+        });
+
+        // Si hay cambios pendientes, intenta guardar al salir
+        window.addEventListener("beforeunload", (e) => {
+          if (saveQueued) {
+            // Algunos browsers ignoran async aquí, pero igual deja el warning
+            e.preventDefault();
+            e.returnValue = "";
+          }
+        });
+
+      } catch (e) {
+        console.error(e);
+        setSync("err", "Error al cargar");
+        alert("No se pudo cargar la base:\n" + (e?.message || e));
       }
     }
 
@@ -767,5 +1502,4 @@
   </script>
 </body>
 </html>
-
 
